@@ -1,12 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var moment = require('moment');
-var feeds = require('../feeds.js');
+var unirest = require('unirest');
 
 module.exports = router;
-
-
-
 
 // =========================================================
 // =
@@ -38,15 +35,65 @@ mongoose.connect(process.env.MONGOLAB_URI || ('mongodb://' + process.env.IP + '/
 // =   DEFINE OUR DATA MODELS
 // =
 
-// Define the data structure of a Phrase model
-// It has width, height, top, and left attributes, which are required to be numbers from 0–100
-// And it has a color attribute, which is optionaland is a string (text)
+// Define the data structure of a Pangram model
 // Allowed data types (Number, String, Date...): http://mongoosejs.com/docs/schematypes.html
 
-var Phrase = mongoose.model('Phrase', {
-  preposition: {type: String, required: true},
-  noun: {type: String, required: true},
+var pangram_schema = new mongoose.Schema({
+  line1_5: {type: String, required: true},
+  line2_7: {type: String, required: true},
+  line3_5: {type: String, required: true},
 });
+
+// Special method of every pangram to return the total character count
+
+pangram_schema.methods.character_count = function() {
+  // Should we exclude spaces and punctuation from this?
+  return this.line1_5.length + this.line2_7.length + this.line3_5.length;
+}
+
+// Special validation to ensure the pangram has all 26 letters
+
+pangram_schema.path('line2_7').validate(function(value) {
+  // value will be line2_7 but doesn't really matter
+  // From http://rosettacode.org/wiki/Pangram_checker#JavaScript
+  var s = ((this.line1_5 || '') + (this.line2_7 || '') + (this.line3_5 || '')).toLowerCase();
+  // sorted by frequency ascending (http://en.wikipedia.org/wiki/Letter_frequency)
+  var letters = "zqxjkvbpygfwmucldrhsnioate";
+  var is_pangram = true;
+  for (var i = 0; i < 26; i++) {
+    if (s.indexOf(letters.charAt(i)) == -1) {
+      is_pangram = false;
+      break;
+    }
+  }
+  return is_pangram;
+}, 'Not a pangram!');
+
+// Special validations to ensure the haiku has the correct syllables
+
+pangram_schema.path('line1_5').validate(function(value, callback) {
+  validate_syllables(value, 5, callback);
+}, "Line 1 doesn't have 5 syllables");
+
+pangram_schema.path('line2_7').validate(function(value, callback) {
+  validate_syllables(value, 7, callback);
+}, "Line 2 doesn't have 7 syllables");
+
+pangram_schema.path('line3_5').validate(function(value, callback) {
+  validate_syllables(value, 5, callback);
+}, "Line 3 doesn't have 5 syllables");
+
+function validate_syllables(value, required_syllables, callback) {
+  unirest.get("http://rhymebrain.com/talk")
+    .query({function: 'getWordInfo', word: value})
+    .end(function(result) {
+      var data = result.body;
+      var syllables = parseInt(data.syllables);
+      callback(syllables == required_syllables);
+    });
+}
+
+var Pangram = mongoose.model('Pangram', pangram_schema);
 
 
 
@@ -67,42 +114,17 @@ router.get('/', function(request, response, toss) {
   // When the server receives a request for "/", this code runs
 
   // Find all the Shape records in the database
-  Phrase.find(function(err, phrases) {
+  Pangram.find().sort({_id: -1}).exec(function(err, pangrams) {
     // This code will run once the database find is complete.
-    // phrases will contain a list (array) of all the phrases that were found.
+    // pangrams will contain a list (array) of all the pangrams that were found.
     // err will contain errors if any.
 
     // If there's an error, tell Express to do its default behavior, which is show the error page.
     if (err) return toss(err);
     
-    // The list of shapes will be passed to the template.
+    // The list of pangrams will be passed to the template.
     // Any additional variables can be passed in a similar way (response.locals.foo = bar;)
-    response.locals.phrases = phrases;
-    
-    // Also pass the temperature, wind direction, and next bus arrival.
-    // This can crash if the data hasn't loaded for whatever reason, so toss to Express's error page in that case.
-    try {
-      
-      // Use Moment.js to calculate the next bus arrival time minus the current time,
-      // and display it in english e.g. "in 18 minutes".
-      // http://momentjs.com/docs/#/displaying/from/ (returns difference as an english string e.g. "18 minutes")
-      // http://momentjs.com/docs/#/displaying/difference/ (returns difference in milliseconds)
-      var now = moment();
-      var next_arrival = moment(feeds.bus[0].arrival_at);
-      var arriving_in = next_arrival.from(now);
-      var margin = next_arrival.diff(now) / 1000;
-
-      response.locals.temperature = feeds.weather.main.temp;
-      response.locals.font_size = feeds.weather.main.temp / 2;
-      response.locals.wind_direction = feeds.weather.wind.deg;
-      response.locals.arriving_in = arriving_in;
-      response.locals.margin = margin;
-      response.locals.route = feeds.bus[0].route_id;
-      
-    }
-    catch(err) {
-      return toss(err);
-    }
+    response.locals.pangrams = pangrams;
     
     // layout tells template to wrap itself in the "layout" template (located in the "views" folder).
     response.locals.layout = 'layout';
@@ -117,83 +139,31 @@ router.get('/', function(request, response, toss) {
 
 
 
-// SHOW PAGE
-// /show?id=54e2058e85b156d10b064ca0
-// Shows a _single_ phrase
-
-router.get('/show', function(request, response, toss) {
-  
-  // When the server receives a request for "/show", this code runs
-  
-  // Find a Phrase with this id
-  Phrase.findOne({_id: request.query.id}, function(err, phrase) {
-    // This code will run once the database find is complete.
-    // phrase will contain the found phrase.
-    // err will contain errors if any (for example, no such record).
-
-    if (err) return toss(err);
-    
-    response.locals.phrase = phrase;
-    response.locals.layout = 'layout';
-    response.render('show');
-    
-  });
-  
-});
-
-
-
-// NEW PAGE
-// /new
-
-router.get('/new', function(request, response) {
-
-  // When the server receives a request for "/new", this code runs
-  
-  // Just render a basic HTML page with a form. We don't need to pass any variables.
-
-  response.locals.layout = 'layout';
-  response.render('new');
-  
-  // Please see views/new.hbs for additional comments
-  
-});
-
-
-
 // CREATE PAGE
-// /create?width=25&height=25&top=25&left=25&color=#ff0000
-// Normally you get to this page by clicking "Submit" on the /new page, but
+// /create?line1_5=abc&line2_7=def&line3_5=ghi
+// Normally you get to this page by clicking "Submit" on the home page, but
 // you could also enter a URL like the above directly into your browser.
 
 router.get('/create', function(request, response, toss) {
   
   // When the server receives a request for "/create", this code runs
   
-  response.locals.layout = 'layout';
-
-  // Make a new Phrase in memory, with the parameters that come from the URL 
-  // ?width=25&height=25&top=25&left=25&color=#ff0000
-  // and store it in the shape variable
-  var phrase = new Phrase({
-    preposition: request.query.preposition,
-    noun: request.query.noun,
+  // Make a new Pangram in memory, with the parameters that come from the URL 
+  // and store it in the pangram variable
+  var pangram = new Pangram({
+    line1_5: request.query.line1_5,
+    line2_7: request.query.line2_7,
+    line3_5: request.query.line3_5,
   });
   
   // Now save it to the database
-  phrase.save(function(err) {
+  pangram.save(function(err) {
     // This code runs once the database save is complete
 
     // An err here can be due to validations
     if (err) return toss(err);
     
-    // Otherwise render a "thank you" page
-    response.locals.phrase = phrase;
-    response.render('create');
-    
-    // Alternatively we could just do
-    // response.redirect('/');
-    // to send the user straight to the homepage after saving the new shape
+    response.redirect('/');
 
   });
   

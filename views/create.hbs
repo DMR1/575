@@ -1,4 +1,19 @@
-Got it, someone is {{phrase.preposition}} {{phrase.noun}}!
+Thank you for your pangram!
+
+{{#with pangram}}
+    <p>
+        {{line1_5}}
+    </p>
+    <p>
+        {{line2_7}}
+    </p>
+    <p>
+        {{line3_5}}
+    </p>
+    <p class="count">
+        {{character_count}}
+    </p>
+{{/with}}
 
 <p>
     <a href="/">Home</a>

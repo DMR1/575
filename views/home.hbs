@@ -1,28 +1,60 @@
-<p>
-    The temperature near Green Hall is {{temperature}} and the wind direction is from {{wind_direction}}°.
-</p>
-
-<p>
-    The next bus at York and Chapel is arriving {{arriving_in}} on route {{route}}.
-
-<div style="font-size:{{font_size}}pt; margin-left:{{margin}}pt;">
-
-    {{#each phrases}}
+<div class="input">
     
+    <div class="alphabet">
         <div>
-            <span style="display: inline-block; transform: rotate({{../wind_direction}}deg);">
-                <a href="/show?id={{id}}">Someone</a> is {{preposition}} {{noun}}
-            </span>
+            <span class="a">A</span>
+            <span class="b">B</span>
+            <span class="c">C</span>
+            <span class="d">D</span>
+            <span class="e">E</span>
+            <span class="f">F</span>
+            <span class="g">G</span>
+            <span class="h">H</span>
+        </div>
+        <div>
+            <span class="i">I</span>
+            <span class="j">J</span>
+            <span class="k">K</span>
+            <span class="l">L</span>
+            <span class="m">M</span>
+            <span class="n">N</span>
+            <span class="o">O</span>
+            <span class="p">P</span>
+            <span class="q">Q</span>
+            <span class="r">R</span>
+        </div>
+        <div>
+            <span class="s">S</span>
+            <span class="t">T</span>
+            <span class="u">U</span>
+            <span class="v">V</span>
+            <span class="w">W</span>
+            <span class="x">X</span>
+            <span class="y">Y</span>
+            <span class="z">Z</span>
+        </div>
+    </div>
+    
+    <form action="/create">
+        <input name="line1_5" type="text" placeholder="5 — — — — —">
+        <input name="line2_7" type="text" placeholder="7 — — — — — — —">
+        <input name="line3_5" type="text" placeholder="5 — — — — —">
+        <input type="submit">
+    </form>
+    
+</div>
+
+<div class="archive">
+    
+    {{#each pangrams}}
+    
+        <div class="pangram">
+            <p>{{line1_5}}</p>
+            <p>{{line2_7}}</p>
+            <p>{{line3_5}}</p>
+            <p class="count">{{character_count}}</p>
         </div>
     
     {{/each}}
     
 </div>
-
-<p>
-    <a href="/new">Add a phrase</a>
-</p>
-<p>
-    <a href="/about">About this site</a>
-</p>
-
