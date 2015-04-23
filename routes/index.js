@@ -73,15 +73,15 @@ PangramSchema.path('line2_7').validate(function(value) {
 
 PangramSchema.path('line1_5').validate(function(value, callback) {
   validate_syllables(value, 5, callback);
-}, "Line 1 doesn't have 5 syllables");
+}, "Line 1 doesn't have 5 syllables.");
 
 PangramSchema.path('line2_7').validate(function(value, callback) {
   validate_syllables(value, 7, callback);
-}, "Line 2 doesn't have 7 syllables");
+}, "Line 2 doesn't have 7 syllables.");
 
 PangramSchema.path('line3_5').validate(function(value, callback) {
   validate_syllables(value, 5, callback);
-}, "Line 3 doesn't have 5 syllables");
+}, "Line 3 doesn't have 5 syllables.");
 
 function validate_syllables(value, required_syllables, callback) {
   unirest.get("http://rhymebrain.com/talk")
@@ -122,8 +122,13 @@ router.get('/', function(request, response, toss) {
     // If there's an error, tell Express to do its default behavior, which is show the error page.
     if (err) return toss(err);
     
+    // Error message and existing input are passed from the redirect from /create if there were validation errors
+    response.locals.error = request.query.error;
+    response.locals.line1_5 = request.query.line1_5;
+    response.locals.line2_7 = request.query.line2_7;
+    response.locals.line3_5 = request.query.line3_5;
+
     // The list of pangrams will be passed to the template.
-    // Any additional variables can be passed in a similar way (response.locals.foo = bar;)
     response.locals.pangrams = pangrams;
     
     // layout tells template to wrap itself in the "layout" template (located in the "views" folder).
@@ -161,9 +166,28 @@ router.get('/create', function(request, response, toss) {
     // This code runs once the database save is complete
 
     // An err here can be due to validations
-    if (err) return toss(err);
-    
-    response.redirect('/');
+    if (err) {
+      // Figure out an error message and redirect to home, passing the error message to display
+      var errors = [];
+      if (err.errors.line1_5) {
+        errors.push(err.errors.line1_5.message);
+      }
+      if (err.errors.line2_7) {
+        errors.push(err.errors.line2_7.message);
+      }
+      if (err.errors.line3_5) {
+        errors.push(err.errors.line3_5.message);
+      }
+      errors = errors.join(' ');
+      response.redirect('/?error=' + errors + 
+        '&line1_5=' + request.query.line1_5 +
+        '&line2_7=' + request.query.line2_7 +
+        '&line3_5=' + request.query.line3_5);
+    }
+    else {
+      // Otherwise just redirect to home
+      response.redirect('/');  
+    }
 
   });
   

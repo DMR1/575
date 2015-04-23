@@ -1,56 +1,64 @@
 <div id= "backgroundcolor"></div>
 
+<form action="/create">
+
 <div class="submit_form_box">
-    
-<div class="input">
-    
-    <div class="alphabet">
-        <div>
-            <span class="a">A</span>
-            <span class="b">B</span>
-            <span class="c">C</span>
-            <span class="d">D</span>
-            <span class="e">E</span>
-            <span class="f">F</span>
-            <span class="g">G</span>
-            <span class="h">H</span>
+
+    <div class="input">
+
+        {{#if error}}
+            <div class="error">
+                {{error}}
+            </div>
+        {{/if}}        
+
+        <input type="submit" class="submit">
+        
+        <div class="alphabet {{#if error}}hidden{{/if}}">
+            <div>
+                <span class="a">A</span>
+                <span class="b">B</span>
+                <span class="c">C</span>
+                <span class="d">D</span>
+                <span class="e">E</span>
+                <span class="f">F</span>
+                <span class="g">G</span>
+                <span class="h">H</span>
+            </div>
+            <div>
+                <span class="i">I</span>
+                <span class="j">J</span>
+                <span class="k">K</span>
+                <span class="l">L</span>
+                <span class="m">M</span>
+                <span class="n">N</span>
+                <span class="o">O</span>
+                <span class="p">P</span>
+                <span class="q">Q</span>
+                <span class="r">R</span>
+            </div>
+            <div>
+                <span class="s">S</span>
+                <span class="t">T</span>
+                <span class="u">U</span>
+                <span class="v">V</span>
+                <span class="w">W</span>
+                <span class="x">X</span>
+                <span class="y">Y</span>
+                <span class="z">Z</span>
+            </div>
         </div>
-        <div>
-            <span class="i">I</span>
-            <span class="j">J</span>
-            <span class="k">K</span>
-            <span class="l">L</span>
-            <span class="m">M</span>
-            <span class="n">N</span>
-            <span class="o">O</span>
-            <span class="p">P</span>
-            <span class="q">Q</span>
-            <span class="r">R</span>
-        </div>
-        <div>
-            <span class="s">S</span>
-            <span class="t">T</span>
-            <span class="u">U</span>
-            <span class="v">V</span>
-            <span class="w">W</span>
-            <span class="x">X</span>
-            <span class="y">Y</span>
-            <span class="z">Z</span>
-        </div>
-    </div>
-    
-    <form action="/create">
+        
         <br>
-        <input name="line1_5" type="text" placeholder="5 — — — — —"> <br><br>
-        <input name="line2_7" type="text" placeholder="7 — — — — — — —"><br><br>
-        <input name="line3_5" type="text" placeholder="5 — — — — —"><br><br>
-        <input type="submit" style="font-size:18px;">
-    </form>
-    
-</div>
+        <input name="line1_5" id="line1_5" type="text" placeholder="5 — — — — —" value="{{line1_5}}"> <br><br>
+        <input name="line2_7" id="line2_7" type="text" placeholder="7 — — — — — — —" value="{{line2_7}}"><br><br>
+        <input name="line3_5" id="line3_5" type="text" placeholder="5 — — — — —" value="{{line3_5}}"><br><br>
+        
+    </div>
     
 </div>
 
+</form>
 
 
 
@@ -91,3 +99,43 @@
 </div>
 
 
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+<script>
+    
+    var alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+    
+    $('form input').on('keyup', function() {
+        $('.error').remove();
+        $('.alphabet').removeClass('hidden');
+        check_alphabet();
+    });
+    
+    check_alphabet();
+    
+    function check_alphabet() {
+        var text = ($('#line1_5').val() + $('#line2_7').val() + $('#line3_5').val()).toLowerCase();
+        var used = 0;
+        for (var i = 0; i < alphabet.length; i++) {
+            var letter = alphabet[i];
+            if (text.indexOf(letter) >= 0) {
+                $('.' + letter).addClass('used');
+                used += 1;
+                if (used >= 26) {
+                    break;
+                }
+            }
+            else {
+                $('.' + letter).removeClass('used');
+            }
+        }
+        if (used >= 26 && !$('.error').length) {
+            $('.submit').show();
+        }
+        else {
+            $('.submit').hide();
+        }
+    }
+    
+</script>

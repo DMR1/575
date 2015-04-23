@@ -134,3 +134,32 @@ form input {
   color: white;
   outline: none;
 }
+
+
+
+.alphabet.hidden {
+  visibility: hidden;
+}
+
+.alphabet .used {
+  visibility: hidden;
+}
+
+.submit {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  cursor: pointer;
+  width: auto;
+  font-size: 18px;
+}
+
+.error {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 700px;
+  font-size: 18px;
+  letter-spacing: 0.5px;
+}
