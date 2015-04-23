@@ -38,7 +38,7 @@ mongoose.connect(process.env.MONGOLAB_URI || ('mongodb://' + process.env.IP + '/
 // Define the data structure of a Pangram model
 // Allowed data types (Number, String, Date...): http://mongoosejs.com/docs/schematypes.html
 
-var pangram_schema = new mongoose.Schema({
+var PangramSchema = new mongoose.Schema({
   line1_5: {type: String, required: true},
   line2_7: {type: String, required: true},
   line3_5: {type: String, required: true},
@@ -46,14 +46,14 @@ var pangram_schema = new mongoose.Schema({
 
 // Special method of every pangram to return the total character count
 
-pangram_schema.methods.character_count = function() {
+PangramSchema.methods.character_count = function() {
   // Should we exclude spaces and punctuation from this?
   return this.line1_5.length + this.line2_7.length + this.line3_5.length;
 }
 
 // Special validation to ensure the pangram has all 26 letters
 
-pangram_schema.path('line2_7').validate(function(value) {
+PangramSchema.path('line2_7').validate(function(value) {
   // value will be line2_7 but doesn't really matter
   // From http://rosettacode.org/wiki/Pangram_checker#JavaScript
   var s = ((this.line1_5 || '') + (this.line2_7 || '') + (this.line3_5 || '')).toLowerCase();
@@ -71,15 +71,15 @@ pangram_schema.path('line2_7').validate(function(value) {
 
 // Special validations to ensure the haiku has the correct syllables
 
-pangram_schema.path('line1_5').validate(function(value, callback) {
+PangramSchema.path('line1_5').validate(function(value, callback) {
   validate_syllables(value, 5, callback);
 }, "Line 1 doesn't have 5 syllables");
 
-pangram_schema.path('line2_7').validate(function(value, callback) {
+PangramSchema.path('line2_7').validate(function(value, callback) {
   validate_syllables(value, 7, callback);
 }, "Line 2 doesn't have 7 syllables");
 
-pangram_schema.path('line3_5').validate(function(value, callback) {
+PangramSchema.path('line3_5').validate(function(value, callback) {
   validate_syllables(value, 5, callback);
 }, "Line 3 doesn't have 5 syllables");
 
@@ -93,7 +93,7 @@ function validate_syllables(value, required_syllables, callback) {
     });
 }
 
-var Pangram = mongoose.model('Pangram', pangram_schema);
+var Pangram = mongoose.model('Pangram', PangramSchema);
 
 
 

@@ -1,3 +1,136 @@
+@font-face {
+    font-family: 'apollonregular';
+    src: url('apollon_575-webfont.eot');
+    src: url('apollon_575-webfont.eot?#iefix') format('embedded-opentype'),
+         url('apollon_575-webfont.woff2') format('woff2'),
+         url('apollon_575-webfont.woff') format('woff'),
+         url('apollon_575-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
 body {
-  font: 14px Arial, sans-serif;
+	background-color: black;
+	font-family: 'apollonregular';
+	font-size: 34px;
+	color: white;
+	text-transform: uppercase;
+}
+/* **************************************************************** */
+/* **************************************************************** */
+/* **************************************************************** */
+
+
+
+
+
+/* SUBMIT AREA */
+/* **************************************************************** */
+/* **************************************************************** */
+.submit_form_box {
+	position: fixed;
+	left: 38px;
+	top: 38px;
+	z-index: 999999;
+	width: auto;
+	height: auto;
+}
+  
+  
+
+  
+  
+  
+/* ARCHIVE AREA */
+/* **************************************************************** */
+/* **************************************************************** */
+.archive_column {
+    position: absolute;
+    width: 500px;
+    height: 100%;
+    right: 10px;
+    font-size: 18px;
+    letter-spacing: 0.5px;
+    line-height: 10px;
+    text-align: center;
+    z-index: 9;
+}
+
+
+
+
+
+
+
+
+
+
+/* TWO VERTICAL LINES */
+/* **************************************************************** */
+/* **************************************************************** */
+/* **************************************************************** */
+.line_l {
+	position: fixed;
+	z-index: 1;
+	top: 40px;
+}
+
+.line_r {
+	position: fixed;
+	z-index: 1;
+	top: 40px;
+	right: 550px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* INPUT PLACEHOLDER */
+/* PLACE HOLDER AND SUBMIT BUTTON STYLES */
+/* **************************************************************** */
+/* **************************************************************** */
+/* **************************************************************** */
+/* **************************************************************** */
+::-webkit-input-placeholder {
+  color: white;
+  font-family: 'apollonregular';
+  font-size: 34px;
+}
+::-moz-placeholder { /* Firefox 19+ */
+  color: white;
+  font-family: 'apollonregular';
+  font-size: 34px;
+}
+:-ms-input-placeholder {
+  color: white;
+  font-family: 'apollonregular';
+  font-size: 34px;
+}
+:-moz-placeholder { /* Firefox 18- */
+  color: white;
+  font-family: 'apollonregular';
+  font-size: 34px;
+}
+
+form input {
+  width: 820px;
+  font-family: 'apollonregular';
+  font-size: 34px;
+  letter-spacing: 5px;
+  border: none;
+  background: transparent;
+  color: white;
+  outline: none;
 }

@@ -1,3 +1,7 @@
+<div id= "backgroundcolor"></div>
+
+<div class="submit_form_box">
+    
 <div class="input">
     
     <div class="alphabet">
@@ -36,15 +40,23 @@
     </div>
     
     <form action="/create">
-        <input name="line1_5" type="text" placeholder="5 — — — — —">
-        <input name="line2_7" type="text" placeholder="7 — — — — — — —">
-        <input name="line3_5" type="text" placeholder="5 — — — — —">
-        <input type="submit">
+        <br>
+        <input name="line1_5" type="text" placeholder="5 — — — — —"> <br><br>
+        <input name="line2_7" type="text" placeholder="7 — — — — — — —"><br><br>
+        <input name="line3_5" type="text" placeholder="5 — — — — —"><br><br>
+        <input type="submit" style="font-size:18px;">
     </form>
     
 </div>
+    
+</div>
 
-<div class="archive">
+
+
+
+
+<!-- ARCHIVE COLUMN -->
+<div class="archive_column">
     
     {{#each pangrams}}
     
@@ -53,8 +65,29 @@
             <p>{{line2_7}}</p>
             <p>{{line3_5}}</p>
             <p class="count">{{character_count}}</p>
+            <br><br>
         </div>
     
     {{/each}}
     
 </div>
+
+
+
+
+
+
+
+
+
+<!-- VERTICAL LINES -->
+<div class="line_l">
+    <img src="images/Input.png" />
+</div>
+
+
+<div class="line_r">
+    <img src="images/Archive.png" />
+</div>
+
+
